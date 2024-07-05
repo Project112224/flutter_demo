@@ -1,0 +1,52 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:ios)
+
+# desc "create new app"
+# lane :create_app do
+#   create_app_online
+# end
+
+
+platform :ios do
+
+
+  desc "Sync signing"
+  lane :sync do
+    sync_code_signing
+  end
+
+
+  desc "Build ipa"
+  lane :build do
+    # add actions here: https://docs.fastlane.tools/actions
+    scan
+    gym(scheme: "BaseFlutter")
+    crashlytics
+
+  end
+
+  desc "Push to apple connect"
+  lane :release do
+    # add actions here: https://docs.fastlane.tools/actions
+    build
+  end
+
+end
+
+
+
+

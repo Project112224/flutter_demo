@@ -1,0 +1,127 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
+if (flutterVersionCode == null) {
+    flutterVersionCode = '1'
+}
+
+def flutterVersionName = localProperties.getProperty('flutter.versionName')
+if (flutterVersionName == null) {
+    flutterVersionName = '1.0'
+}
+
+android {
+    namespace "com.example.flutter_demo"
+    compileSdkVersion flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        applicationId "com.example.flutter_demo"
+        // You can update the following values to match your application needs.
+        // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
+        minSdkVersion flutter.minSdkVersion
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+
+        multiDexEnabled true
+
+        // TODO - Crash BUG
+        // https://developer.android.com/ndk/guides/abis#gradle
+        // https://github.com/flutter/flutter/issues/83596
+        // https://docs.flutter.dev/add-to-app/android/project-setu
+        ndk {
+            abiFilters.clear()
+        }
+    }
+
+    signingConfigs {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file('local.properties').newDataInputStream())
+        config {
+            keyAlias properties.getProperty('KEYSTORE_ALIAS')
+            keyPassword properties.getProperty('KEYSTORE_ALIAS_PASSWORD')
+            storeFile file(properties.getProperty('KEYSTORE_FILE'))
+            storePassword properties.getProperty('KEYSTORE_PASSWORD')
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+            debuggable false
+            // Signing with the debug keys for now, so `flutter run --release` works.
+            signingConfig signingConfigs.config
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            ndk {
+                abiFilters.clear()
+            }
+        }
+    }
+
+    flavorDimensions "app"
+
+    splits {
+        abi {
+            enable true //enables the ABIs split mechanism
+            reset() //reset the list of ABIs to be included to an empty string
+            include 'arm64-v8a', 'armeabi-v7a', 'x86'
+            universalApk true
+        }
+    }
+
+    productFlavors {
+        // 正式區
+        prod {
+            manifestPlaceholders = [APP_NAME: "@string/app_appname"]
+        }
+        // 測試區
+        uat {
+            manifestPlaceholders = [APP_NAME: "@string/app_appnameU"]
+            applicationIdSuffix ".uat"
+        }
+        sit {
+            manifestPlaceholders = [APP_NAME: "@string/app_appnameS"]
+            applicationIdSuffix ".sit"
+        }
+        // 本地
+        local {
+            manifestPlaceholders = [APP_NAME: "@string/app_appnameL"]
+            applicationIdSuffix ".local"
+        }
+    }
+}
+
+flutter {
+    source '../..'
+}

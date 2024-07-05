@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_appname">Base Flutter</string>
+    <string name="app_appnameU">Base UAT</string>
+    <string name="app_appnameS">Base SIT</string>
+    <string name="app_appnameL">Base Local</string>
+
+    <string name="link_name">bf.com</string>
+    <string name="link_nameU">bu.com</string>
+    <string name="link_nameS">bs.com</string>
+    <string name="link_nameL">bl.com</string>
+</resources>
